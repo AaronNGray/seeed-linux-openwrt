@@ -1,4 +1,4 @@
-name: Build BCM2711 Minimal OpenWrt-23.05-snapshot 
+name: Build BCM2711 Minimal OpenWrt-24.10-snapshot 
 on:
   repository_dispatch:
     types: [openwrt]
