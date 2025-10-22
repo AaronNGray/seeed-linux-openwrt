@@ -1,0 +1,68 @@
+name: Create Release from Build Artifact
+on:
+  workflow_run:
+    workflows: ["Build BCM2711 Minimal OpenWrt-24.10-snapshot"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+env:
+  BUILD_CONFIG_FILE: bcm27xx_bcm2711_24_10_snapshot_minimal
+  TARGET: bcm27xx
+  SUBTARGET: bcm2711
+  OPENWRT_VERSION: openwrt-24.10
+  TYPE: minimal
+
+jobs:
+  create-release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.BUILD_CONFIG_FILE }}
+          path: ./build/bin
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          TAG="${{ env.OPENWRT_VERSION }}-${{ env.BUILD_CONFIG_FILE }}-$(date +%Y%m%d%H%M%S)"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "name=Automated build ${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: ${{ steps.tag.outputs.name }}
+          body: "Automated build release for ${{ env.BUILD_CONFIG_FILE }} (triggered by workflow run ${{ github.event.workflow_run.id }})"
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release assets
+        env:
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          UPLOAD_URL_BASE=${UPLOAD_URL%\{\?name,label\}}
+          TARGET_DIR=./build/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}
+          if [ -d "$TARGET_DIR" ]; then
+            find "$TARGET_DIR" -maxdepth 1 -type f | while read -r f; do
+              name=$(basename "$f")
+              echo "Uploading $name..."
+              curl -s -X POST \
+                -H "Authorization: token ${GITHUB_TOKEN}" \
+                -H "Content-Type: application/octet-stream" \
+                --data-binary @"$f" \
+                "${UPLOAD_URL_BASE}?name=${name}"
+            done
+          else
+            echo "No files found in $TARGET_DIR"
+            exit 1
+          fi
