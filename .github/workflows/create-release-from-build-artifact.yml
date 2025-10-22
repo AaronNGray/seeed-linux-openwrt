@@ -1,4 +1,4 @@
-name: Create Release from Build Artifact
+name:
 on:
   workflow_run:
     workflows: ["Build BCM2711 Minimal OpenWrt-24.10-snapshot"]
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Image artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUILD_CONFIG_FILE }}
           path: ./build/bin
