@@ -62,7 +62,7 @@ jobs:
             ./build/${{env.OPENWRT_VERSION}}/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}/
           retention-days: 7      
   create-release:
-    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch') }}
+    needs: [Build]
     runs-on: ubuntu-latest
     steps:
       - name: Download Image artifact
