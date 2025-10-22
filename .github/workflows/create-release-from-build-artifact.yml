@@ -4,6 +4,7 @@ on:
     workflows: ["Build BCM2711 Minimal OpenWrt-24.10-snapshot"]
     types:
       - completed
+  workflow_dispatch: {}
 
 permissions:
   contents: write
