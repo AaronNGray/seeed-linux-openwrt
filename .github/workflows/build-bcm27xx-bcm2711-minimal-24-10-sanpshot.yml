@@ -96,7 +96,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           UPLOAD_URL_BASE=${UPLOAD_URL%\{\?name,label\}}
-          TARGET_DIR=./build/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}
+          TARGET_DIR=./build/${{env.OPENWRT_VERSION}}/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}
           if [ -d "$TARGET_DIR" ]; then
             find "$TARGET_DIR" -maxdepth 1 -type f | while read -r f; do
               name=$(basename "$f")
