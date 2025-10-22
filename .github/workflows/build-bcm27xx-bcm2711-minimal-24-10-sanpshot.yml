@@ -1,4 +1,7 @@
 name: Build BCM2711 Minimal OpenWrt-24.10-snapshot 
+permissions:
+  contents: write
+  packages: write
 on:
   repository_dispatch:
     types: [openwrt]
