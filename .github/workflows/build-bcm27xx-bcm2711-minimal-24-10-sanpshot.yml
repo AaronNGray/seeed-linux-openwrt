@@ -96,7 +96,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           UPLOAD_URL_BASE=${UPLOAD_URL%\{\?name,label\}}
-          TARGET_DIR=./build/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}
+          TARGET_DIR=./build/${OPENWRT_VERSION}/bin/targets/${TARGET}/${SUBTARGET}
           if [ -d "$TARGET_DIR" ]; then
             find "$TARGET_DIR" -maxdepth 1 -type f | while read -r f; do
               name=$(basename "$f")
@@ -150,4 +150,4 @@ jobs:
           rclone mkdir $RCLONE_PACKAGE:Openwrt/${{env.OPENWRT_VERSION}}/$(date +"%Y-%m-%d")/${{ env.TARGET }}/${{ env.SUBTARGET }}/${{ env.TYPE }}
           rclone copy ./build/bin $RCLONE_PACKAGE:Openwrt/${{env.OPENWRT_VERSION}}/$(date +"%Y-%m-%d")/${{ env.TARGET }}/${{ env.SUBTARGET }}/${{ env.TYPE }}
           echo "::notice file=Firmware-OneDrive::Download Link: https://1drv.ms/u/s!AqG2uRmVUhlSh0NHMLMmQKLyASvi?e=mup3cd"
-          
+
