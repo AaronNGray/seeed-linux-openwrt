@@ -61,6 +61,10 @@ jobs:
           path: | 
             ./build/${{env.OPENWRT_VERSION}}/bin/targets/${{ env.TARGET }}/${{ env.SUBTARGET }}/
           retention-days: 7      
+      - name: tree
+        run: |
+          tree ./build/${{env.OPENWRT_VERSION}}/bin/
+  
   create-release:
     needs: [Build]
     runs-on: ubuntu-latest
