@@ -13,7 +13,7 @@ env:
   BUILD_CONFIG_FILE: bcm27xx_bcm2711_24_10_snapshot_minimal
   TARGET: bcm27xx
   SUBTARGET: bcm2711
-  OPENWRT_VERSION: openwrt-24.10
+  OPENWRT_VERSION: openwrt-24.10.4
   TYPE: minimal
   
 
@@ -125,9 +125,6 @@ jobs:
         with:
           ref: "main"
           fetch-depth: 2
-      - name: Setup Environment
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
 
       - name: Download Bin Folder
         uses: actions/download-artifact@main
@@ -135,22 +132,12 @@ jobs:
           name: ${{ env.BUILD_CONFIG_FILE }}
           path: ./build/bin
 
-      - name: Upload Image to OneDrive
-        env:
-          RCLONE_PACKAGE: ${{ secrets.ONEDRIVE_NAME }}
-        run: |
-          mkdir -p ~/.config/rclone/
-          cat << EOF > /tmp/rclone.de
-          ${{ secrets.ONEDRIVE_CONF }}
-          EOF
-          base64  -d  /tmp/rclone.de > ~/.config/rclone/rclone.conf
-          echo "# Rclone Packages Upload Rule" >> /tmp/upload-rule.txt
-          echo "- openwrt*" >> /tmp/upload-rule.txt
-          echo "- sha256sums" >> /tmp/upload-rule.txt
-          echo "- packages-server.zip" >> /tmp/upload-rule.txt
-          echo "- *.buildinfo" >> /tmp/upload-rule.txt
-          echo "+ openwrt-keyring*" >> /tmp/upload-rule.txt
-          rclone mkdir $RCLONE_PACKAGE:Openwrt/${{env.OPENWRT_VERSION}}/$(date +"%Y-%m-%d")/${{ env.TARGET }}/${{ env.SUBTARGET }}/${{ env.TYPE }}
-          rclone copy ./build/bin $RCLONE_PACKAGE:Openwrt/${{env.OPENWRT_VERSION}}/$(date +"%Y-%m-%d")/${{ env.TARGET }}/${{ env.SUBTARGET }}/${{ env.TYPE }}
-          echo "::notice file=Firmware-OneDrive::Download Link: https://1drv.ms/u/s!AqG2uRmVUhlSh0NHMLMmQKLyASvi?e=mup3cd"
+      - name: Upload to Google Drive
+        uses: hoatruongdev09/google-drive-file-upload-github-action@1.1
+        with:
+          credentials: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          filename: ./build/bin/**/*
+          folderId: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          name: 'Openwrt/${{env.OPENWRT_VERSION}}/$(date +"%Y-%m-%d")/${{ env.TARGET }}/${{ env.SUBTARGET }}/${{ env.TYPE }}'
+          overwrite: true
 
