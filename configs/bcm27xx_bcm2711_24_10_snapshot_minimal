@@ -3,7 +3,7 @@
     "description": "Minimal openwrt v24.10 snapshot config for bcm2711",
     "target": "bcm27xx",
     "subtarget": "bcm2711",
-    "version": "openwrt-24.10.4",
+    "version": "openwrt-24.10",
     "config": "bcm27xx_bcm2711_minimal_24_10_defconfig",
     "files": ["minimal"],
     "patches": [],
