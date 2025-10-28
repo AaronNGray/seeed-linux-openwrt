@@ -13,7 +13,7 @@ env:
   BUILD_CONFIG_FILE: bcm27xx_bcm2711_24_10_snapshot_minimal
   TARGET: bcm27xx
   SUBTARGET: bcm2711
-  OPENWRT_VERSION: openwrt-24.10.4
+  OPENWRT_VERSION: openwrt-24.10
   TYPE: minimal
   
 
